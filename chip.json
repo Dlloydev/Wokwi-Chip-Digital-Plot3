@@ -1,0 +1,37 @@
+{
+  "name": "Digital Plot3",
+  "author": "David Lloyd",
+  "license": "MIT",
+  "docs": "https://github.com/Dlloydev/Wokwi-Chip-Digital-Plot3/blob/main/docs/README.md",
+  "pins": [
+    "D0",
+    "D1",
+    "D2",
+    "",
+    "",
+    ""
+  ],
+  "display": {
+    "width": 252,
+    "height": 118
+  },
+  "controls": [
+    {
+      "id": "sampletime",
+      "label": "Sample Time μs",
+      "type": "range",
+      "min": 50,
+      "max": 10000,
+      "step": 50
+    },
+    {
+      "id": "trigger",
+      "label": "D0 Trigger ⭘ ⬆ ⬇",
+      "type": "range",
+      "min": 0,
+      "max": 2,
+      "step": 1
+    }
+  ]
+}
+
