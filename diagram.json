@@ -53,5 +53,5 @@
       [ "h-28.8", "v-28.8", "h297.6", "v-67.2" ]
     ]
   ],
-  "dependencies": { "chip-digital-plot3": "github:Dlloydev/Wokwi-Chip-Digital-Plot3@1.0.0" }
+  "dependencies": { "chip-digital-plot3": "github:Dlloydev/Wokwi-Chip-Digital-Plot3@1.0.1" }
 }

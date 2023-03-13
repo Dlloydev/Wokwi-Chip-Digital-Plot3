@@ -4,7 +4,7 @@
 
 Plot up to 3 Digital Signals.
 
-- Plotter `Sample Time μs` range is 50-10000 µs (default 100 µs).
+- Plotter `Sample Time μs` range is 10µs to 10000 ms (default 100 µs).
 -  Width of plot is 250 samples.
 - `D0 Trigger` modes are Off (`0`) Rising (default) ⬆ and Falling ⬇
 - Displays peak volts`Vmax`, and minimum volts `Vmin`
@@ -12,7 +12,7 @@ Plot up to 3 Digital Signals.
 
 
 
-![image](https://user-images.githubusercontent.com/63488701/224565632-8314d00c-5b6e-4ec7-a552-f219dd703030.png)
+![image](https://user-images.githubusercontent.com/63488701/224606843-e65ecaab-c9bc-456d-bfee-e0ffe66ae27a.png)
 
 ## ![image](https://user-images.githubusercontent.com/63488701/224565532-a949f62d-dfe1-478e-97dd-6c274d61cade.png)
 
@@ -28,7 +28,7 @@ To use this chip in your project, include it as a dependency in your `diagram.js
 
 ```json
   "dependencies": {
-    "chip-digital-plot3": "github:Dlloydev/Wokwi-Chip-Digital-Plot3@1.0.0"
+    "chip-digital-plot3": "github:Dlloydev/Wokwi-Chip-Digital-Plot3@1.0.1"
   }
 ```
 

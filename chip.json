@@ -17,12 +17,19 @@
   },
   "controls": [
     {
-      "id": "sampletime",
+      "id": "sampletimeus",
       "label": "Sample Time μs",
       "type": "range",
-      "min": 50,
-      "max": 10000,
-      "step": 50
+      "min": 0,
+      "max": 400,
+      "step": 10
+    },    {
+      "id": "sampletimems",
+      "label": "Sample Time ms",
+      "type": "range",
+      "min": 0,
+      "max": 40,
+      "step": 1
     },
     {
       "id": "trigger",

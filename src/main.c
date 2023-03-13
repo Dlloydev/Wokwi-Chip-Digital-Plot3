@@ -147,7 +147,8 @@ typedef struct {
   pin_t pin_D0;
   pin_t pin_D1;
   pin_t pin_D2;
-  uint32_t sampletime_attr;
+  uint32_t sampletimeus_attr;
+  uint32_t sampletimems_attr;
   uint32_t trigger_attr;
   buffer_t framebuffer;
   uint32_t fb_w;
@@ -155,12 +156,12 @@ typedef struct {
   uint32_t serial_h;
   uint32_t serial_x;
   uint32_t serial_y;
-  float sample_d0;
-  float sample_last_d0;
-  float sample_d1;
-  float sample_last_d1;
-  float sample_d2;
-  float sample_last_d2;
+  uint32_t sample_d0;
+  uint32_t sample_last_d0;
+  uint32_t sample_d1;
+  uint32_t sample_last_d1;
+  uint32_t sample_d2;
+  uint32_t sample_last_d2;
   float sample_max0;
   float sample_min0;
   float sample_max1;
@@ -168,7 +169,9 @@ typedef struct {
   float sample_max2;
   float sample_min2;
   uint32_t sample_us;
+  uint32_t sample_ms;
   uint32_t capture_ms;
+  uint32_t capture_us;
   uint32_t plot_h;
   uint32_t plot_x;
   uint32_t plot_y0;
@@ -195,7 +198,8 @@ void chip_init(void) {
   chip->pin_D0 = pin_init("D0", INPUT);
   chip->pin_D1 = pin_init("D1", INPUT);
   chip->pin_D2 = pin_init("D2", INPUT);
-  chip->sampletime_attr = attr_init("sampletime", 100);
+  chip->sampletimeus_attr = attr_init("sampletimeus", 100);
+  chip->sampletimems_attr = attr_init("sampletimems", 0);
   chip->trigger_attr = attr_init("trigger", 1);
 
   chip->white = (rgba_t) {
@@ -229,7 +233,8 @@ void chip_init(void) {
   printf("Framebuffer: width=%d, height=%d\n", chip->fb_w, chip->fb_h);
   chip->plot_h = chip->fb_h - chip->serial_h;
 
-  chip->sample_us = attr_read(chip->sampletime_attr);
+  chip->sample_us = attr_read(chip->sampletimeus_attr);
+  chip->sample_ms = attr_read(chip->sampletimems_attr);
   chip->capture_ms = ((chip->fb_w - 2) * chip->sample_us) / 1000;
 
   fill_string(chip);
@@ -267,11 +272,16 @@ void chip_timer_event(void *user_data) {
   else  draw_plot(chip); // auto trigger = 0 (off)
   chip->sample_last_d0 = chip->sample_d0;
 
-  if (chip->sample_us != attr_read(chip->sampletime_attr)) {
-    chip->sample_us = attr_read(chip->sampletime_attr);
-    chip->capture_ms = ((chip->fb_w - 2) * chip->sample_us) / 1000;
-    timer_start(chip->timer, chip->sample_us, true);
+  if ((chip->sample_us != attr_read(chip->sampletimeus_attr)) ||
+      (chip->sample_ms != attr_read(chip->sampletimems_attr))) {
+    chip->sample_us = attr_read(chip->sampletimeus_attr);
+    chip->sample_ms = attr_read(chip->sampletimems_attr);
+    if (chip->sample_us + chip->sample_ms < 10) chip->sample_us = 10;
+    chip->capture_us = (chip->fb_w - 2) * (chip->sample_us + (chip->sample_ms * 1000));
+    chip->capture_ms = chip->capture_us / 1000;
+    timer_start(chip->timer, chip->sample_us + (chip->sample_ms * 1000), true);
   }
+
   if (chip->timer_count == 0) draw_string(chip);
   chip->timer_count++;
 }
@@ -280,7 +290,7 @@ void draw_string(chip_state_t *chip) {
   char serial_a[32];
   char serial_b[32];
   char serial_c[32];
-  snprintf (serial_a, 32, "%1.1f Vmin %1.1f Vmax %4d us", chip->sample_min0, chip->sample_max0, chip->sample_us);
+  snprintf (serial_a, 32, "%1.1f Vmin %1.1f Vmax %4d us", chip->sample_min0, chip->sample_max0, chip->sample_us + (chip->sample_ms * 1000));
   snprintf (serial_b, 32, "%1.1f Vmin %1.1f Vmax %4d ms", chip->sample_min1, chip->sample_max1, chip->capture_ms);
   snprintf (serial_c, 32, "%1.1f Vmin %1.1f Vmax       ", chip->sample_min2, chip->sample_max2);
   rgba_t color;
@@ -305,7 +315,7 @@ void draw_plot(chip_state_t *chip) {
 
   chip->plot_y0 = 24 - chip->sample_d0 * 20;
   for (int y = 4; y < 26; y += 1) {
-   color = ((chip->plot_y0 >= 4 && chip->plot_y0 <= 26) &&
+    color = ((chip->plot_y0 >= 4 && chip->plot_y0 <= 26) &&
              (y < chip->plot_y0 && y < chip->plot_py0) ||
              (y > chip->plot_y0 && y > chip->plot_py0) ||
              (chip->plot_x == chip->fb_w - 1) ||
@@ -315,7 +325,7 @@ void draw_plot(chip_state_t *chip) {
 
   chip->plot_y1 = 50 - chip->sample_d1 * 20;
   for (int y = 30; y < 52; y += 1) {
-   color = ((chip->plot_y1 >= 30 && chip->plot_y1 <= 52) &&
+    color = ((chip->plot_y1 >= 30 && chip->plot_y1 <= 52) &&
              (y < chip->plot_y1 && y < chip->plot_py1) ||
              (y > chip->plot_y1 && y > chip->plot_py1) ||
              (chip->plot_x == chip->fb_w - 1) ||
@@ -325,7 +335,7 @@ void draw_plot(chip_state_t *chip) {
 
   chip->plot_y2 = 76 - chip->sample_d2 * 20;
   for (int y = 56; y < 78; y += 1) {
-   color = ((chip->plot_y2 >= 56 && chip->plot_y2 <= 78) &&
+    color = ((chip->plot_y2 >= 56 && chip->plot_y2 <= 78) &&
              (y < chip->plot_y2 && y < chip->plot_py2) ||
              (y > chip->plot_y2 && y > chip->plot_py2) ||
              (chip->plot_x == chip->fb_w - 1) ||
