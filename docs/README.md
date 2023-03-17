@@ -1,6 +1,18 @@
-# Wokwi-Chip-Digital-Plot3
+# Wokwi-Chip-Digital-Plot3 (depreciated)
 
-## Description
+The capabilities of this chip (and more) are now part of the new Scope chip, therefore this repository is now marked as archived and read-only. 
+
+### [Wokwi-Chip-Scope](https://github.com/Dlloydev/Wokwi-Chip-Scope)
+
+
+
+---
+
+
+
+## Wokwi-Chip-Digital-Plot3
+
+### Description
 
 Plot up to 3 Digital Signals.
 
